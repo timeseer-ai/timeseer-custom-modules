@@ -202,3 +202,15 @@ It would now be possible to just copy over **all** files in `build/exe.win-amd64
 but to allow adding other modules later on,
 developed in a separate project,
 create another subdirectory: `library/analysis/custom_statistics/custom_modules`.
+
+## GitHub Actions
+
+This project contains a [GitHub Action](https://github.com/features/actions) that automatically builds and zips the executable and its supporting files.
+
+Fork this repository or adapt the [workflow](.github/workflows/ci.yml) to another CI system.
+
+## Contributing
+
+Feel free to fork this project.
+We welcome pull requests,
+but consider opening an issue to discuss significant changes upfront.

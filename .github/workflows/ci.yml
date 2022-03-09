@@ -1,0 +1,30 @@
+name: Build Timeseer.AI custom module
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  lint_and_build:
+    name: Lint and build
+    runs-on: windows-2022
+    steps:
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Check and build
+        run: ./build.ps1
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: timeseer-custom-modules
+          path: build/exe.win-amd64-3.9
