@@ -4,7 +4,7 @@ black --check .\main.py .\custom_modules\
 if (-not $?) {
     throw "Build failure"
 }
-pylint --disable=duplicate-code .\custom_modules\
+ruff check .\main.py .\custom_modules\
 if (-not $?) {
     throw "Build failure"
 }
