@@ -64,7 +64,7 @@ It also includes some tools to enforce coding style best practices.
 Install them with `pip`:
 
 ```PowerShell
-(venv) PS > pip install -r requirements.txt
+(venv) PS > pip install -r requirements.txt -r requirements-dev-txt
 ```
 
 Test building an executable:
@@ -165,10 +165,10 @@ Format all code using [black](https://github.com/psf/black):
 PS > black .\main.py .\custom_modules\
 ```
 
-[Lint](https://pylint.org/) and [typecheck](http://mypy-lang.org/) the code:
+[Lint](https://docs.astral.sh/ruff/) and [typecheck](http://mypy-lang.org/) the code:
 
 ```PowerShell
-PS > pylint --disable=duplicate-code .\custom_modules\
+PS > ruff .\check main.py .\custom_modules\
 PS > mypy --ignore-missing-imports .\custom_modules\
 ```
 
