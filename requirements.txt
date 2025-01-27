@@ -1,1 +1,1 @@
-pyarrow==18.0.0
+pyarrow==19.0.0
