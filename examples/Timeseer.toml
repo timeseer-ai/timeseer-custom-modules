@@ -1,0 +1,10 @@
+data_dir = "db"
+
+[web]
+workers = 2
+
+[data_service]
+external = true
+
+[storage_container_uploads]
+enable = true

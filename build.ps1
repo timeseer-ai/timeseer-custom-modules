@@ -1,19 +1,19 @@
 $ErrorActionPreference = "Stop"
 
-black --check .\main.py .\custom_modules\
+uv run ruff format --check
 if (-not $?) {
     throw "Build failure"
 }
-ruff check .\main.py .\custom_modules\
+uv run ruff check
 if (-not $?) {
     throw "Build failure"
 }
-mypy --ignore-missing-imports .\custom_modules\
+uv run mypy --ignore-missing-imports .\custom_modules\
 if (-not $?) {
     throw "Build failure"
 }
 Remove-Item .\build\ -Recurse -ErrorAction Ignore
-python setup.py build
+uv run cxfreeze build_exe
 if (-not $?) {
     throw "Build failure"
 }
