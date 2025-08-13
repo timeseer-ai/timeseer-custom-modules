@@ -64,7 +64,7 @@ It also includes some tools to enforce coding style best practices.
 Install them with `pip`:
 
 ```PowerShell
-(venv) PS > pip install -r requirements.txt -r requirements-dev-txt
+(venv) PS > pip install -r requirements.txt -r requirements-dev.txt
 ```
 
 Test building an executable:
