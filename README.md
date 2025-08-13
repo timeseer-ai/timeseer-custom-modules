@@ -7,70 +7,22 @@ This repository contains a blueprint for writing custom analysis modules in Time
 Fork,
 checkout or download an archive containing this repository to get started.
 
-This guide uses Windows PowerShell,
-but the traditional Command Prompt could be used as well.
+Ensure [uv](https://docs.astral.sh/uv/) is available.
 
-First,
-create a [virtualenv](https://docs.python.org/3/tutorial/venv.html):
+This blueprint uses [cx_Freeze](https://cx-freeze.readthedocs.io/en/latest/) to transform the Python scripts in an executable.
 
-```PowerShell
-PS > python -m venv venv
-```
-
-Then,
-activate the virtualenv:
+Some dependencies to ensure a clean coding style are available:
 
 ```PowerShell
-PS > .\venv\Scripts\activate
+PS > uv run ruff format
+PS > uv run ruff check
+PS > uv run mypy
 ```
 
-Depending on the security settings inside PowerShell,
-the [ExecutionPolicy](https:/go.microsoft.com/fwlink/?LinkID=135170) needs to be updated.
-
-To do this for the current process only,
-run:
+Build the executable using:
 
 ```PowerShell
-PS > Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
-
-Execution Policy Change
-The execution policy helps protect you from scripts that you do not trust. Changing the execution policy might expose
-you to the security risks described in the about_Execution_Policies help topic at
-https:/go.microsoft.com/fwlink/?LinkID=135170. Do you want to change the execution policy?
-[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "N"): Y
-```
-
-If this operation is not allowed,
-revert to Command Prompt and run:
-
-```
->.\venv\Scripts\activate
-```
-
-Successful activation of the virtualenv will be indicated by a change in the shell prompt:
-
-```PowerShell
-(venv) PS >
-```
-
-or
-
-```
-(venv) >
-```
-
-This blueprint uses [cx_Freeze](https://cx-freeze.readthedocs.io/en/latest/) to transform the Python scripts in a Windows executable.
-It also includes some tools to enforce coding style best practices.
-Install them with `pip`:
-
-```PowerShell
-(venv) PS > pip install -r requirements.txt -r requirements-dev-txt
-```
-
-Test building an executable:
-
-```PowerShell
-(venv) PS > python setup.py build
+PS > uv run cxfreeze
 ```
 
 The executable can be found under `build/exe.win-amd64-3.<minor Python version>`.
@@ -159,33 +111,17 @@ def run_analysis(_: dict[str, Any], data: pa.Table) -> dict[str, Any]:
 
 Note that `main.py` already loads the data into an [Apache Arrow](https://arrow.apache.org/docs/python/index.html) table.
 
-Format all code using [black](https://github.com/psf/black):
+Format all code using [ruff](https://docs.astral.sh/ruff/):
 
 ```PowerShell
-PS > black .\main.py .\custom_modules\
+PS > uv run ruff format
 ```
 
 [Lint](https://docs.astral.sh/ruff/) and [typecheck](http://mypy-lang.org/) the code:
 
 ```PowerShell
-PS > ruff .\check main.py .\custom_modules\
-PS > mypy --ignore-missing-imports .\custom_modules\
-```
-
-Remove the `build/` directory if it exists.
-Then build the executable:
-
-```PowerShell
-PS > python setup.py build
-```
-
-Open a new shell,
-then go to `build/exe.win-amd64-3.<Minor Python version>`.
-Verify the executable:
-
-```PowerShell
-PS > .\custom_modules.exe
-{"count_points": ["help", "metadata", "analyze"]}
+PS > uv run ruff check
+PS > uv run mypy --ignore-missing-imports .\custom_modules\
 ```
 
 ## Deploying the custom module
@@ -202,6 +138,26 @@ It would now be possible to just copy over **all** files in `build/exe.win-amd64
 but to allow adding other modules later on,
 developed in a separate project,
 create another subdirectory: `library/analysis/custom_statistics/custom_modules`.
+
+## Testing in a container image
+
+Once built,
+the module can be mounted in a container image and tested.
+
+This example works after building the example above on Linux (`uv run cxfreeze build_exe`).
+
+```bash
+docker run \
+    --rm \
+    -u $(id -u) \
+    -v $PWD/examples/Timeseer.toml:/usr/src/app/Timeseer.toml \
+    -v $PWD/db:/usr/src/app/db \
+    -v $PWD/build/exe.linux-x86_64-3.12/:/usr/src/app/library/analysis/custom_modules/count \
+    -p 8080:8080 \
+    -it container.timeseer.ai/timeseer:latest
+```
+
+Adapt the module name as required.
 
 ## GitHub Actions
 
